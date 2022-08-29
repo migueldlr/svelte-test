@@ -27,7 +27,7 @@
         duration: 200,
         easing: quintOut,
         css: (t) => `
-					transform: ${transform} scale(${t});
+					transform: ${transform} translateY(-${100 - t * 100}px);
 					opacity: ${t}
 				`,
       };
@@ -39,6 +39,12 @@
   const addAtIndex = (index: number, value: number) => {
     data = produce(data, (draft) => {
       draft.splice(index, 0, makeEl(value));
+    });
+  };
+
+  const removeAtIndex = (index: number) => {
+    data = produce(data, (draft) => {
+      draft.splice(index, 1);
     });
   };
 </script>
@@ -64,9 +70,12 @@
   >
 
   <div class="container">
-    {#each data as el (el.id)}
+    {#each data as el, index (el.id)}
       <div
         class="box"
+        on:click={() => {
+          removeAtIndex(index);
+        }}
         in:receive={{ key: el.id }}
         out:send={{ key: el.id }}
         animate:flip={{ duration: 200 }}
@@ -89,6 +98,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+  .box:hover {
+    background-color: pink;
+    transition: background-color 200ms;
   }
   .label {
     margin: 0;
