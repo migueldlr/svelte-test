@@ -2,6 +2,7 @@
   import produce from 'immer';
   import { quintOut } from 'svelte/easing';
   import { crossfade } from 'svelte/transition';
+  import { flip } from 'svelte/animate';
   import { getRandomInt } from './lib/util';
 
   let uid = 0;
@@ -14,6 +15,24 @@
       value,
     };
   };
+
+  const [send, receive] = crossfade({
+    duration: (d) => Math.sqrt(d * 200),
+
+    fallback(node, params) {
+      const style = getComputedStyle(node);
+      const transform = style.transform === 'none' ? '' : style.transform;
+
+      return {
+        duration: 200,
+        easing: quintOut,
+        css: (t) => `
+					transform: ${transform} scale(${t});
+					opacity: ${t}
+				`,
+      };
+    },
+  });
 
   let data = [1, 2, 3, 4].map(makeEl);
 
@@ -45,8 +64,15 @@
   >
 
   <div class="container">
-    {#each data as el}
-      <div class="box">{el.value}</div>
+    {#each data as el (el.id)}
+      <div
+        class="box"
+        in:receive={{ key: el.id }}
+        out:send={{ key: el.id }}
+        animate:flip={{ duration: 200 }}
+      >
+        {el.value}
+      </div>
     {/each}
   </div>
 </main>
