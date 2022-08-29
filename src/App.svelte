@@ -84,11 +84,16 @@
       </div>
     {/each}
   </div>
+
+  <div class="info">
+    <pre>{JSON.stringify(data.map((x) => x.value))}</pre>
+  </div>
 </main>
 
 <style>
   .container {
     display: flex;
+    margin-top: 2em;
   }
   .box {
     width: 4em;
